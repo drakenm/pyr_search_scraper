@@ -44,16 +44,13 @@ r = requests.get( url, headers={'User-agent': 'Mozilla/5.0'} )
 if r.status_code == 200:
     lgr.debug( 'Request successful' )
     page = soup( r.content, 'html.parser' )
-    search_results = page.find_all( attrs={"data-testid":"posts-list"} )
-    lgr.debug( search_results )
-    # search_results = page.find_all( href=re.compile(f"/r/{subreddit}/comments/") )
-    # posts = page.find_all( attrs = {'data-testid': 'post-title'} )
-    # lgr.debug( f'Found {len(posts)} posts' )
-    # for post in posts:
-    lgr.debug( f'Found {len(search_results)} search results' )
-    for post in search_results:
-        title = post.find( 'h3' )
-        if title:
-            lgr.debug( f'Title: {title.text}' )
+    search_result = page.find_all( attrs={"data-testid":"post-title-text"} )
+    lgr.debug( f'Found {len(search_result)} search results' )
+    for post in search_result:
+        href = post['href']
+        # title = post.find( 'h3' )
+        if post:
+            lgr.debug( f'Title: {post.text}' )
+            lgr.debug( f'HREF: {href}' )
         else:
             lgr.debug( 'No title found' )
