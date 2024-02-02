@@ -28,11 +28,13 @@ if ( os.path.exists( conf_path ) ):
         lgr.debug( conf_data )
         subreddit = conf_data['subreddit']
         search_text = conf_data['search_text']
+        filter_pattern = conf_data['filter_pattern']
 else:
     subreddit = input( "Enter subreddit: " )
     lgr.debug( f'User entered subreddit: {subreddit}' )
     search_text = urlparse.quote( input( "Enter search term for subreddit: " ) )
     lgr.debug( f'User entered search term: {search_text}' )
+    filter_pattern = input( "Enter pattern to match at start of string: " )
 
 
 
@@ -46,11 +48,20 @@ if r.status_code == 200:
     page = soup( r.content, 'html.parser' )
     search_result = page.find_all( attrs={"data-testid":"post-title-text"} )
     lgr.debug( f'Found {len(search_result)} search results' )
-    for post in search_result:
-        href = post['href']
-        # title = post.find( 'h3' )
-        if post:
-            lgr.debug( f'Title: {post.text}' )
-            lgr.debug( f'HREF: {href}' )
+
+    for index, item in enumerate(search_result):
+        text = item.text.strip()
+        href = item['href']
+        search_text_re = re.compile( r'(\d{3}t)', re.IGNORECASE )
+        lgr.debug( search_text_re )
+        if filter_pattern and not re.compile( filter_pattern, re.IGNORECASE ).match( text ):
+            lgr.debug( f'Title text does not contain {filter_pattern}: {text}' )
+            continue
+        if not re.compile( r'(\d{3}t)', re.IGNORECASE ).match( text ):
+            lgr.debug( f'Title text does not contain {search_text}: {text}' )
+            continue
+        if item:
+            lgr.debug( f'{index}\tText: {text}' )
+            lgr.debug( f'\t\tHREF: {href}' )
         else:
             lgr.debug( 'No title found' )
