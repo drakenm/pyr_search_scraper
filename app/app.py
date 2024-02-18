@@ -54,7 +54,6 @@ if r.status_code == 200:
         text = item.text.strip()
         href = item['href']
         search_text_re = re.compile( r'' + search_text, re.IGNORECASE )
-        lgr.debug( search_text_re )
         if filter_pattern and not re.compile( r'(\(|\[)?' + filter_pattern, re.IGNORECASE ).search( text ):
             lgr.debug( f'Title text does not contain {filter_pattern}: {text}' )
             continue
@@ -70,7 +69,8 @@ if r.status_code == 200:
                 cur = con.cursor()
                 cur.execute( 'SELECT hash FROM results WHERE hash = ?', (hash,) )
                 if cur.fetchone():
-                    lgr.debug( f'{index}\tText: {text} already exists in db' )
+                    lgr.debug( f'{index}\tText: {text}' )
+                    lgr.debug( f'\t\t{index}--Already exists in db' )
                     continue
             con = sqlite3.connect( f'{root_path}/app.db' )
             cur = con.cursor()
