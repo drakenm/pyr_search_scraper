@@ -61,8 +61,7 @@ if r.status_code == 200:
             lgr.debug( f'Title text does not contain {search_text}: {text}' )
             continue
         if item:
-            enc_concat = (text + href).encode( encoding='utf-8', errors='strict' )
-            hash = hashlib.sha256( enc_concat ).hexdigest()
+            hash = hashlib.sha256( (text + href).encode( encoding='utf-8', errors='strict' ) ).hexdigest()
             # check if hash exists in db
             if os.path.exists( f'{root_path}/app.db' ):
                 con = sqlite3.connect( f'{root_path}/app.db' )
