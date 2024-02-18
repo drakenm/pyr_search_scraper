@@ -1,5 +1,6 @@
+from email import errors
 from bs4 import BeautifulSoup as soup
-import requests, sys, logging, re, os, yaml
+import requests, sys, logging, re, os, yaml, hashlib, sqlite3
 import urllib.parse as urlparse
 
 lgr = logging.getLogger( 'app_logger' )
@@ -52,15 +53,31 @@ if r.status_code == 200:
     for index, item in enumerate(search_result):
         text = item.text.strip()
         href = item['href']
-        search_text_re = re.compile( r'(\d{3}t)', re.IGNORECASE )
+        search_text_re = re.compile( r'' + search_text, re.IGNORECASE )
         lgr.debug( search_text_re )
-        if filter_pattern and not re.compile( filter_pattern, re.IGNORECASE ).match( text ):
+        if filter_pattern and not re.compile( r'(\(|\[)?' + filter_pattern, re.IGNORECASE ).search( text ):
             lgr.debug( f'Title text does not contain {filter_pattern}: {text}' )
             continue
-        if not re.compile( r'(\d{3}t)', re.IGNORECASE ).match( text ):
+        if not search_text_re.search( text ):
             lgr.debug( f'Title text does not contain {search_text}: {text}' )
             continue
         if item:
+            enc_concat = (text + href).encode( encoding='utf-8', errors='strict' )
+            hash = hashlib.sha256( enc_concat ).hexdigest()
+            # check if hash exists in db
+            if os.path.exists( f'{root_path}/app.db' ):
+                con = sqlite3.connect( f'{root_path}/app.db' )
+                cur = con.cursor()
+                cur.execute( 'SELECT hash FROM results WHERE hash = ?', (hash,) )
+                if cur.fetchone():
+                    lgr.debug( f'{index}\tText: {text} already exists in db' )
+                    continue
+            con = sqlite3.connect( f'{root_path}/app.db' )
+            cur = con.cursor()
+            cur.execute( 'CREATE TABLE IF NOT EXISTS results (hash TEXT PRIMARY KEY, title TEXT, href TEXT)' )
+            cur.execute( 'INSERT INTO results (hash, title, href) VALUES (?, ?, ?)', (hash, text, href) )
+            con.commit()
+
             lgr.debug( f'{index}\tText: {text}' )
             lgr.debug( f'\t\tHREF: {href}' )
         else:
