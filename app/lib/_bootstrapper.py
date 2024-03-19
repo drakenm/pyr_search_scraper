@@ -28,3 +28,6 @@ class Bootstrapper:
             env['subreddit'] = conf_data['subreddit']
             env['search_text'] = conf_data['search_text']
             env['filter_pattern'] = conf_data['filter_pattern']
+            env['sms_key'] = conf_data['sms_key']
+            env['sms_to'] = conf_data['sms_to']
+            env['sms_from'] = conf_data['sms_from']
