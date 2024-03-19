@@ -26,6 +26,20 @@ lgr.debug( f'URL: {url}' )
 
 r = requests.get( url, headers={'User-agent': 'Mozilla/5.0'} )
 
+def get_hash( data:tuple ) -> str:
+    str_to_hash = ''
+    for v in data:
+        str_to_hash += str(v)
+    return hashlib.sha256( str_to_hash.encode( encoding='utf-8', errors='strict' ) ).hexdigest()
+
+def matchFound( needle:re.Pattern, haystack:str ) -> bool:
+    if not needle: return False
+    # if not re.compile( r'(\(|\[)?' + env['filter_pattern'], re.IGNORECASE ).search( text ):
+    if not needle.search( haystack ):
+        # lgr.debug( f'Text does not contain {needle.pattern}: {haystack}' )
+        return False
+    return True
+
 if r.status_code == 200:
     lgr.debug( 'Request successful' )
     page = soup( r.content, 'html.parser' )
@@ -33,14 +47,6 @@ if r.status_code == 200:
     lgr.debug( f'Found {len(search_result)} search results' )
 
     dbm = Database_Manager( sqlite3.connect( env['app_db'] ) )
-
-    def matchFound( needle:re.Pattern, haystack:str ) -> bool:
-        if not needle: return False
-        # if not re.compile( r'(\(|\[)?' + env['filter_pattern'], re.IGNORECASE ).search( text ):
-        if not needle.search( haystack ):
-            lgr.debug( f'Text does not contain {needle.pattern}: {haystack}' )
-            return False
-        return True
 
     for index, item in enumerate(search_result):
         if not item:
@@ -53,7 +59,7 @@ if r.status_code == 200:
 
         if not matchFound( filter_text_re, text ) or not matchFound( search_text_re, text ): continue
 
-        hash = hashlib.sha256( (text + href).encode( encoding='utf-8', errors='strict' ) ).hexdigest()
+        hash = get_hash( (text, href) )
         # check if hash exists in db
         if dbm.select_column( table='results', column='hash', data=hash ):
             lgr.debug( f'{index}\tText: {text}' )
