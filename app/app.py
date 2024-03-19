@@ -53,7 +53,7 @@ def send_sms( key:str, message:str ) -> str:
     }
     try:
         r = requests.post( url, json=payload, headers=headers )
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         lgr.error( f'Failed to send SMS: {e}' )
         return f'Failed to send SMS: {e}'
     if r.status_code != 200:
@@ -78,7 +78,7 @@ for index, item in enumerate(search_result):
     if not item:
         lgr.debug( 'No title found' )
         continue
-    title = item.text.strip()
+    title = item.get_text(strip=True, separator=" ").strip()
     href = item['href']
     filter_text_re = re.compile( r'' + env['filter_pattern'] )
     search_text_re = re.compile( r'' + env['search_text'], re.IGNORECASE )
@@ -110,7 +110,7 @@ for index, item in enumerate(search_result):
     if len(result_content) > 0:
         lgr.info( f'Found {len(result_content)} results containing a dollar sign ($)...' )
         for index, item in enumerate(result_content):
-            body_snippet = item.text.lower().strip()
+            body_snippet = item.get_text(strip=True, separator=" ").lower().strip()
             find_text = env['search_text'].lower()
             if len(result_content) == 1:
                 lgr.debug( "\tOnly one result found...")
@@ -125,14 +125,19 @@ for index, item in enumerate(search_result):
     aldi_finds[hash] = {'title': title, 'url': result_url, 'price': price_snippet}
     dbm.add_result( hash, title, result_url, price_snippet )
 
-for k, v in aldi_finds.items():
-    lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
-    lgr.debug("building sms message...")
-    message = f"New Ad Posted for {env['search_text']}:\n\n{v['title']}\n{v['url']}\nPrice: {v['price']}"
-    lgr.debug( f"{message}" )
-    if env['sms_key']:
-        lgr.debug( f"Sending SMS..." )
-        send_sms( env['sms_key'], message )
+import pprint
+pp = pprint.PrettyPrinter(depth=2)
+pp.pprint( aldi_finds )
+
+# for k, v in aldi_finds.items():
+#     lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
+#     lgr.debug("building sms message...")
+#     # message = f"New Ad Posted for {env['search_text']}:\n\n{v['title']}\n{v['url']}\nPrice: {v['price']}"
+#     message = "New Ad Posted for" + env['search_text'] + ":\n\n" + v['title'] + "\n" + v['url'] + "\nPrice: " + v['price']
+#     lgr.debug( f"{message}" )
+#     if env['sms_key']:
+#         lgr.debug( f"Sending SMS..." )
+#         send_sms( env['sms_key'], message )
 
 
 lgr.debug( '======App end logging======' )
