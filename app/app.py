@@ -1,10 +1,8 @@
-from email import errors
 from bs4 import BeautifulSoup as soup
-import requests, sys, re, os, hashlib, sqlite3, pprint
-import urllib.parse as urlparse
+import requests, sys, re, hashlib, sqlite3
 from lib._logger import Log_Init
 from lib._bootstrapper import Bootstrapper as Boot
-from os import environ as env, write
+from os import environ as env
 from lib._database import Database_Manager
 
 try:
