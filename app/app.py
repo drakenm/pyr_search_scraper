@@ -118,7 +118,7 @@ def search_and_seize( search_result:bs4.element.ResultSet, dbm:Database_Manager,
     lgr.info( f'\t {title}' )
     lgr.info( f'\t {href}' )
 
-        result_url = f"{env['url_base']}{href}"
+    result_url = f"{env['url_base']}{href}"
 
 
     lgr.debug( f'\tSearch Result Item URL: {result_url}' )
@@ -148,16 +148,16 @@ def search_and_seize( search_result:bs4.element.ResultSet, dbm:Database_Manager,
     aldi_finds[hash] = {'title': title, 'url': result_url, 'price': price_snippet}
     dbm.add_result( hash, title, result_url, price_snippet )
 
-for k, v in aldi_finds.items():
-    lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
-    lgr.debug("building sms message...")
-    # message = f"New Ad Posted for {env['search_text']}:\n\n{v['title']}\n{v['url']}\nPrice: {v['price']}"
-    message = "New Ad Posted for a " + env['search_text'] + ":\n\n" + v['title'] + "\n\n" + v['url'] + "\n\nPrice: " + v['price']
-    lgr.debug( f"{message}" )
-    if env['sms_key']:
-        # lgr.debug( f"Not sending SMS for now..." )
-        lgr.debug( f"Sending SMS..." )
-        send_sms( env['sms_key'], message )
+    for k, v in aldi_finds.items():
+        lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
+        lgr.debug("building sms message...")
+        # message = f"New Ad Posted for {env['search_text']}:\n\n{v['title']}\n{v['url']}\nPrice: {v['price']}"
+        message = "New Ad Posted for a " + env['search_text'] + ":\n\n" + v['title'] + "\n\n" + v['url'] + "\n\nPrice: " + v['price']
+        lgr.debug( f"{message}" )
+        if env['sms_key']:
+            # lgr.debug( f"Not sending SMS for now..." )
+            lgr.debug( f"Sending SMS..." )
+            send_sms( env['sms_key'], message )
 
 
 try:
