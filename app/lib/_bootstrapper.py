@@ -16,9 +16,6 @@ class Bootstrapper:
         else:
             raise FileNotFoundError( f'Configuration file not found: {env["app_conf"]}' )
         
-
-            
-
     @classmethod
     def get_conf_vars(cls, conf_file_path: str) -> None:
         with open( conf_file_path, 'r' ) as file:
