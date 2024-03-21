@@ -4,6 +4,7 @@ from lib._logger import Log_Init
 from lib._bootstrapper import Bootstrapper as Boot
 from os import environ as env
 from lib._database import Database_Manager
+from lib._utility import Utility as utl
 
 try:
     Boot(sys.argv)
@@ -22,42 +23,8 @@ lgr.debug( f'APP ENTRY: {env["app_entry"]}' )
 url = f"{env['url_base']}{env['url_path']}{env['url_query']}"
 lgr.debug( f'URL: {url}' )
 
+
 r = requests.get( url, headers={'User-agent': 'Mozilla/5.0'} )
-
-def get_hash( data:tuple ) -> str:
-    str_to_hash = ''
-    for v in data:
-        str_to_hash += str(v)
-    return hashlib.sha256( str_to_hash.encode( encoding='utf-8', errors='strict' ) ).hexdigest()
-
-def matchFound( needle:re.Pattern, haystack:str ) -> bool:
-    if not needle: return False
-    # if not re.compile( r'(\(|\[)?' + env['filter_pattern'], re.IGNORECASE ).search( text ):
-    if not needle.search( haystack ):
-        # lgr.debug( f'Text does not contain {needle.pattern}: {haystack}' )
-        return False
-    return True
-
-def send_sms( key:str, message:str ) -> str:
-    url = f"https://sandbox.dialpad.com/api/v2/sms?apikey={key}"
-    payload = {
-        'from_number': env['sms_from'],
-        'to_numbers': [env['sms_to']],
-        'text': message
-    }
-    headers = {
-        'content-type': 'application/json',
-        'accept': 'application/json'
-    }
-    try:
-        r = requests.post( url, json=payload, headers=headers )
-    except Exception as e:
-        lgr.error( f'Failed to send SMS: {e}' )
-        return f'Failed to send SMS: {e}'
-    if r.status_code != 200:
-        lgr.error( f'Failed to send SMS: {r.status_code}' )
-        lgr.error( f'Response: {r.text}' )
-    return r.text
 
 if r.status_code != 200:
     lgr.error( f'Request failed with status code: {r.status_code}' )
@@ -81,9 +48,9 @@ for index, item in enumerate(search_result):
     filter_text_re = re.compile( r'' + env['filter_pattern'] )
     search_text_re = re.compile( r'' + env['search_text'], re.IGNORECASE )
 
-    if not matchFound( filter_text_re, title ) or not matchFound( search_text_re, title ): continue
+    if not utl.matchFound( filter_text_re, title ) or not utl.matchFound( search_text_re, title ): continue
 
-    hash = get_hash( (title, href) )
+    hash = utl.get_hash( (title, href) )
     # check if hash exists in db
     if dbm.select_column( table='results', column='hash', data=hash ):
         lgr.debug( f'{index}. Already exists in db...' )
@@ -115,7 +82,7 @@ for index, item in enumerate(search_result):
                 lgr.debug( f'\tprice snippet is most likely:' )
                 lgr.debug( f'\t\t> {body_snippet}' )
                 price_snippet = body_snippet
-            elif len(result_content) > 1 and matchFound( search_text_re, body_snippet ):
+            elif len(result_content) > 1 and utl.matchFound( search_text_re, body_snippet ):
                 lgr.debug( f'\tprice snippet is most likely:' )
                 lgr.debug( f'\t\t> {body_snippet}' )
                 price_snippet = body_snippet
@@ -135,7 +102,7 @@ for k, v in aldi_finds.items():
     if env['sms_key']:
         # lgr.debug( f"Not sending SMS for now..." )
         lgr.debug( f"Sending SMS..." )
-        send_sms( env['sms_key'], message )
+        utl.send_sms( env['sms_key'], message )
 
 
 lgr.debug( '======App end logging======' )
