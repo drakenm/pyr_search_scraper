@@ -31,8 +31,8 @@ else:
 lgr.debug( f'URL(s): {url_list}' )
 
 for p,u in zip(search_params, url_list):
-    # Utility.do_the_thing(p, u, env['filter_pattern'])
     lgr.debug( f'Param: {p}' )
     lgr.debug( f'URL: {u}' )
+    Utility.do_the_thing(p, u, env['filter_pattern'])
 
 lgr.debug( '======App end logging======' )
