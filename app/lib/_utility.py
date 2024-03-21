@@ -121,6 +121,5 @@ class Utility:
             message = f"New Ad Posted for a {search_param}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
             Utility.lgr.debug( f"{message}" )
             if env['sms_key']:
-                # Utility.lgr.debug( f"Not sending SMS for now..." )
                 Utility.lgr.debug( f"Sending SMS..." )
                 Utility.send_sms( env['sms_key'], message )
