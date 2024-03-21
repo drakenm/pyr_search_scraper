@@ -17,16 +17,24 @@ class Bootstrapper:
             cls.get_conf_vars( env['app_conf'] )
         else:
             raise FileNotFoundError( f'Configuration file not found: {env["app_conf"]}' )
-        
-        env['url_path'] = f"/r/{env['subreddit']}/search/"
-        env['url_query'] = f"?q={env['search_text']}&sort=new"
 
     @classmethod
     def get_conf_vars(cls, conf_file_path: str) -> None:
         with open( conf_file_path, 'r' ) as file:
             conf_data = yaml.safe_load( file )
         env['subreddit'] = conf_data['subreddit']
-        env['search_text'] = conf_data['search_text']
+        env['url_path'] = f"/r/{env['subreddit']}/search/"
+        if len(conf_data['search_text']) == 0:
+            raise ValueError( f'No search text found in configuration file: {conf_file_path}' )
+        if len(conf_data['search_text']) == 1:
+            env['search_text_set_len'] = '1'
+            env['search_text'] = conf_data['search_text']
+            env[f'url_query'] = f"?q={conf_data['search_text']}&sort=new"
+        else:
+            env['search_text_set_len'] = str(len(conf_data['search_text']))
+            for idx,v in enumerate(conf_data['search_text']):
+                env[f'url_query_{idx}'] = f"?q={v}&sort=new"
+                env[f'search_text_{idx}'] = v
         env['filter_pattern'] = conf_data['filter_pattern']
         env['sms_key'] = conf_data['sms_key']
         env['sms_to'] = conf_data['sms_to']
