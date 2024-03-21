@@ -4,7 +4,7 @@ from lib._logger import Log_Init
 from lib._bootstrapper import Bootstrapper as Boot
 from os import environ as env
 from lib._database import Database_Manager
-from lib._utility import Utility as utl
+from lib._utility import Utility
 
 try:
     Boot(sys.argv)
@@ -23,7 +23,8 @@ lgr.debug( f'APP ENTRY: {env["app_entry"]}' )
 url = f"{env['url_base']}{env['url_path']}{env['url_query']}"
 lgr.debug( f'URL: {url}' )
 
-
+for u in url_list:
+    pass
 r = requests.get( url, headers={'User-agent': 'Mozilla/5.0'} )
 
 if r.status_code != 200:
@@ -48,9 +49,9 @@ for index, item in enumerate(search_result):
     filter_text_re = re.compile( r'' + env['filter_pattern'] )
     search_text_re = re.compile( r'' + env['search_text'], re.IGNORECASE )
 
-    if not utl.matchFound( filter_text_re, title ) or not utl.matchFound( search_text_re, title ): continue
+    if not Utility.matchFound( filter_text_re, title ) or not Utility.matchFound( search_text_re, title ): continue
 
-    hash = utl.get_hash( (title, href) )
+    hash = Utility.get_hash( (title, href) )
     # check if hash exists in db
     if dbm.select_column( table='results', column='hash', data=hash ):
         lgr.debug( f'{index}. Already exists in db...' )
@@ -82,7 +83,7 @@ for index, item in enumerate(search_result):
                 lgr.debug( f'\tprice snippet is most likely:' )
                 lgr.debug( f'\t\t> {body_snippet}' )
                 price_snippet = body_snippet
-            elif len(result_content) > 1 and utl.matchFound( search_text_re, body_snippet ):
+            elif len(result_content) > 1 and Utility.matchFound( search_text_re, body_snippet ):
                 lgr.debug( f'\tprice snippet is most likely:' )
                 lgr.debug( f'\t\t> {body_snippet}' )
                 price_snippet = body_snippet
@@ -102,7 +103,7 @@ for k, v in aldi_finds.items():
     if env['sms_key']:
         # lgr.debug( f"Not sending SMS for now..." )
         lgr.debug( f"Sending SMS..." )
-        utl.send_sms( env['sms_key'], message )
+        Utility.send_sms( env['sms_key'], message )
 
 
 lgr.debug( '======App end logging======' )
