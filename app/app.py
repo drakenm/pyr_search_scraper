@@ -130,8 +130,7 @@ for index, item in enumerate(search_result):
 for k, v in aldi_finds.items():
     lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
     lgr.debug("building sms message...")
-    # message = f"New Ad Posted for {env['search_text']}:\n\n{v['title']}\n{v['url']}\nPrice: {v['price']}"
-    message = "New Ad Posted for a " + env['search_text'] + ":\n\n" + v['title'] + "\n\n" + v['url'] + "\n\nPrice: " + v['price']
+    message = f"New Ad Posted for a {env['search_text']}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
     lgr.debug( f"{message}" )
     if env['sms_key']:
         # lgr.debug( f"Not sending SMS for now..." )
