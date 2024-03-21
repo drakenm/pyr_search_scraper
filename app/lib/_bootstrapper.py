@@ -2,6 +2,7 @@ from ast import Dict
 import os, yaml
 from os import environ as env
 from pathlib import Path
+from urllib.parse import quote_plus
 class Bootstrapper:
     @classmethod
     def __init__(cls, cli_args) -> None:
@@ -29,11 +30,11 @@ class Bootstrapper:
         if len(conf_data['search_text']) == 1:
             env['search_text_set_len'] = '1'
             env['search_text'] = conf_data['search_text']
-            env[f'url_query'] = f"?q={conf_data['search_text']}&sort=new"
+            env[f'url_query'] = f"?q={quote_plus(conf_data['search_text'])}&sort=new"
         else:
             env['search_text_set_len'] = str(len(conf_data['search_text']))
             for idx,v in enumerate(conf_data['search_text']):
-                env[f'url_query_{idx}'] = f"?q={v}&sort=new"
+                env[f'url_query_{idx}'] = f"?q={quote_plus(v)}&sort=new"
                 env[f'search_text_{idx}'] = v
         env['filter_pattern'] = conf_data['filter_pattern']
         env['sms_key'] = conf_data['sms_key']
