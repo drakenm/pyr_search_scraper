@@ -6,7 +6,7 @@ from os import environ as env
 from lib._database import Database_Manager
 
 try:
-    Boot()
+    Boot(sys.argv)
 except Exception as e:
     print( f'Logging uninitialized...' )
     print( f'Error bootstrapping: {e}' )
