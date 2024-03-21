@@ -43,7 +43,8 @@ class Utility:
         return r.text
     
     @staticmethod
-    def do_the_thing( search_text:str, url:str, filter_pattern:str ) -> None:
+    def do_the_thing( search_param:str, url:str, filter_pattern:str ) -> None:
+        raw_search_param = search_param.strip('"')
         r = requests.get( url, headers={'User-agent': 'Mozilla/5.0'} )
 
         if r.status_code != 200:
@@ -65,8 +66,8 @@ class Utility:
                 continue
             title = item.get_text(strip=True, separator=" ").strip()
             href = item['href']
-            filter_text_re = re.compile( r'' + env['filter_pattern'] )
-            search_text_re = re.compile( r'' + env['search_text'], re.IGNORECASE )
+            filter_text_re = re.compile( r'' + filter_pattern )
+            search_text_re = re.compile( r'' + raw_search_param, re.IGNORECASE )
 
             if not Utility.matchFound( filter_text_re, title ) or not Utility.matchFound( search_text_re, title ): continue
 
@@ -84,11 +85,11 @@ class Utility:
             Utility.lgr.info( f'\t {title}' )
             Utility.lgr.info( f'\t {href}' )
 
-            result_url = f"{env['url_base']}{href}"
+            search_result_item_url = f"{env['url_base']}{href}"
 
 
-            Utility.lgr.debug( f'\tSearch Result Item URL: {result_url}' )
-            result_get = requests.get( result_url, headers={'User-agent': 'Mozilla/5.0'} )
+            Utility.lgr.debug( f'\tSearch Result Item URL: {search_result_item_url}' )
+            result_get = requests.get( search_result_item_url, headers={'User-agent': 'Mozilla/5.0'} )
             result_page = soup( result_get.content, 'html.parser' )
             price_text_re = re.compile( r'\$\d{1,6}' )
             result_content = result_page.find_all( string=price_text_re )
@@ -111,8 +112,8 @@ class Utility:
                 except NameError:
                     Utility.lgr.debug( f'No price snippet found...' )
                     price_snippet = 'Price not found'
-            aldi_finds[hash] = {'title': title, 'url': result_url, 'price': price_snippet}
-            dbm.add_result( hash, title, result_url, price_snippet )
+            aldi_finds[hash] = {'title': title, 'url': search_result_item_url, 'price': price_snippet}
+            dbm.add_result( hash, title, search_result_item_url, price_snippet )
 
         for k, v in aldi_finds.items():
             Utility.lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
