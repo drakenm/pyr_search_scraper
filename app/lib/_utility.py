@@ -14,9 +14,7 @@ class Utility():
     @staticmethod
     def matchFound( needle:re.Pattern, haystack:str ) -> bool:
         if not needle: return False
-        # if not re.compile( r'(\(|\[)?' + env['filter_pattern'], re.IGNORECASE ).search( text ):
         if not needle.search( haystack ):
-            # lgr.debug( f'Text does not contain {needle.pattern}: {haystack}' )
             return False
         return True
 
