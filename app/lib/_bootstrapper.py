@@ -18,6 +18,9 @@ class Bootstrapper:
             cls.get_conf_vars( env['app_conf'] )
         else:
             raise FileNotFoundError( f'Configuration file not found: {env["app_conf"]}' )
+        
+        Bootstrapper.parse_cli_args( cli_args )
+        Bootstrapper.validate_env_vars()
 
     @classmethod
     def get_conf_vars(cls, conf_file_path: str) -> None:
@@ -40,3 +43,49 @@ class Bootstrapper:
         env['sms_key'] = conf_data['sms_key']
         env['sms_to'] = conf_data['sms_to']
         env['sms_from'] = conf_data['sms_from']
+
+    @classmethod
+    def parse_arg(cls, arg:str, i:int) -> tuple[str,str]:
+        arg_name, arg_value = arg.split('=')
+        return (arg_name, arg_value)
+    
+    @classmethod
+    def parse_cli_args(cls, args:list[str]) -> None:
+        if len(args) <= 1:
+            # raise ValueError(f'No cli arguments provided...')
+            print('No cli arguments provided...')
+            return
+        else:
+            for idx, arg in enumerate(args):
+                if idx == 0: continue
+                if arg.find('=') == -1:
+                    # raise Exception( f'Malformed cli argument: {arg}, Expected Syntax: key=value' )
+                    print(f'Malformed cli argument: {arg}, Expected Syntax: key=value')
+                    print(f'Discarding argument {idx}: {arg}')
+                    continue
+                try:
+                    cls.assign_arg(cls.parse_arg(arg, idx))
+                except Exception as e:
+                    print(f'Error parsing argument {idx}: {arg}')
+                    print(f'Error: {e}')
+                    exit(1)
+    
+    @classmethod
+    def assign_arg(cls, args:tuple[str,str]) -> bool:
+        arg_name:str = args[0].lower().strip()
+        arg_value:str = args[1].lower().strip()
+        match arg_name:
+            case 'sms':
+                env['sms_send'] = arg_value
+            case _:
+                print(f'Unknown argument: {arg_name}')
+                return False
+        return True
+    
+    @classmethod
+    def validate_env_vars(cls) -> None:
+        try:
+            env['sms_send']
+        except KeyError:
+            print('No sms_send argument provided, defaulting to "n"')
+            env['sms_send'] = 'n'

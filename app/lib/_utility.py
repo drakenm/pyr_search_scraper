@@ -115,11 +115,14 @@ class Utility:
             aldi_finds[hash] = {'title': title, 'url': search_result_item_url, 'price': price_snippet}
             dbm.add_result( hash, title, search_result_item_url, price_snippet )
 
-        for k, v in aldi_finds.items():
-            Utility.lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
-            Utility.lgr.debug("building sms message...")
-            message = f"New Ad Posted for a {search_param}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
-            Utility.lgr.debug( f"{message}" )
-            if env['sms_key']:
-                Utility.lgr.debug( f"Sending SMS..." )
-                Utility.send_sms( env['sms_key'], message )
+        if env['sms_send'] == 'y':
+            for k, v in aldi_finds.items():
+                Utility.lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
+                Utility.lgr.debug("building sms message...")
+                message = f"New Ad Posted for a {search_param}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
+                Utility.lgr.debug( f"{message}" )
+                if env['sms_key']:
+                    Utility.lgr.debug( f"Sending SMS..." )
+                    Utility.send_sms( env['sms_key'], message )
+        else:
+            Utility.lgr.debug( f'SMS not enabled...' )
