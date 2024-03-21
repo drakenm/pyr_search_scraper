@@ -118,7 +118,7 @@ class Utility:
         for k, v in aldi_finds.items():
             Utility.lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
             Utility.lgr.debug("building sms message...")
-            message = f"New Ad Posted for a {env['search_text']}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
+            message = f"New Ad Posted for a {search_param}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
             Utility.lgr.debug( f"{message}" )
             if env['sms_key']:
                 # Utility.lgr.debug( f"Not sending SMS for now..." )
