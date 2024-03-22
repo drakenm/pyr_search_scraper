@@ -30,11 +30,11 @@ class Bootstrapper:
         env['url_path'] = f"/r/{env['subreddit']}/search/"
         if len(conf_data['search_text']) == 0:
             raise ValueError( f'No search text found in configuration file: {conf_file_path}' )
-        if len(conf_data['search_text']) == 1:
+        if isinstance(conf_data['search_text'], str) or (isinstance(conf_data['search_text'], list) and len(conf_data['search_text']) == 1):
             env['search_text_set_len'] = '1'
             env['search_text'] = conf_data['search_text']
             env[f'url_query'] = f"?q={quote_plus(conf_data['search_text'])}&sort=new"
-        else:
+        elif isinstance(conf_data['search_text'], list) and len(conf_data['search_text']) > 1:
             env['search_text_set_len'] = str(len(conf_data['search_text']))
             for idx,v in enumerate(conf_data['search_text']):
                 env[f'url_query_{idx}'] = f"?q={quote_plus(v)}&sort=new"
