@@ -1,4 +1,4 @@
-*.yaml
+*conf*.yaml
 *.db
 test.py
 
