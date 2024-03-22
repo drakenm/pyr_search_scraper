@@ -5,11 +5,15 @@ from os import environ as env
 
 try:
     Boot(sys.argv)
-except Exception as e:
+except FileNotFoundError as e:
     print( f'Logging uninitialized...' )
     print( f'Error bootstrapping: {e}' )
     print( f'Exiting' )
     sys.exit(1)
+# except ValueError as e:
+#     print( f'Error bootstrapping: {e}' )
+#     print( f'Exiting' )
+#     sys.exit(1)
 
 from lib._utility import Utility
 
