@@ -9,8 +9,8 @@ class Bootstrapper:
         env['app_root'] = os.path.dirname( os.path.dirname( os.path.dirname( os.path.realpath( __file__ ) ) ) )
         env['app_entry'] = os.path.abspath(f'{env["app_root"]}/app/app.py')
         env['app_conf'] = os.path.abspath(f'{env["app_root"]}/conf.yaml')
-        env['app_db'] = os.path.abspath(f'{env["app_root"]}/app.db')
-        env['app_log'] = os.path.abspath(f'{env["app_root"]}/app.log')
+        env['app_db'] = os.path.abspath(f'{env["app_root"]}/data/app.db')
+        env['app_log'] = os.path.abspath(f'{env["app_root"]}/data/app.log')
         env['app_log_name'] = 'app_logger'
         env['url_base'] = 'https://www.reddit.com'
 
