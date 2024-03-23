@@ -1,3 +1,4 @@
+*conf*.json
 *conf*.yaml
 *.db
 test.py
