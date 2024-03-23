@@ -1,6 +1,8 @@
 version: '3'
+name: python-reddit-scraper
 services:
   app:
+    container-name: pyscrapr-app
     image: python:3.12-apline
   sqlite:
     container-name: pyscrapr-sqlite
