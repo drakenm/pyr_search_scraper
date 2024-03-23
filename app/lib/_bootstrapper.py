@@ -41,6 +41,10 @@ class Bootstrapper:
         env['sms_key'] = conf_data['sms_key']
         env['sms_to'] = conf_data['sms_to']
         env['sms_from'] = conf_data['sms_from']
+        env['app_client_id'] = conf_data['app_client_id']
+        env['app_client_secret'] = conf_data['app_client_secret']
+        env['app_redirect_uri'] = conf_data['app_redirect_uri']
+        env['app_user_agent'] = conf_data['app_user_agent']
 
     @classmethod
     def parse_arg(cls, arg:str, i:int) -> tuple[str,str]:
