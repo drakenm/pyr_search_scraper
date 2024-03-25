@@ -30,8 +30,12 @@ class Bootstrapper:
             raise ValueError( f'No search text found in configuration file: {conf_file_path}' )
         if isinstance(conf_data['search_text'], str) or (isinstance(conf_data['search_text'], list) and len(conf_data['search_text']) == 1):
             env['search_text_set_len'] = '1'
-            env['search_text'] = conf_data['search_text']
-            env[f'url_query'] = f"?q={quote_plus(conf_data['search_text'])}&sort=new"
+            if isinstance(conf_data['search_text'], list):
+                env['search_text'] = conf_data['search_text'][0]
+                env[f'url_query'] = f"?q={quote_plus(conf_data['search_text'][0])}&sort=new"
+            else:
+                env['search_text'] = conf_data['search_text']
+                env[f'url_query'] = f"?q={quote_plus(conf_data['search_text'])}&sort=new"
         elif isinstance(conf_data['search_text'], list) and len(conf_data['search_text']) > 1:
             env['search_text_set_len'] = str(len(conf_data['search_text']))
             for idx,v in enumerate(conf_data['search_text']):
