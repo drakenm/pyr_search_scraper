@@ -52,9 +52,8 @@ class Utility:
 
         for i in subreddit.search(search_param, sort='new', limit=return_limit):
             id, title, url, post = i.id, i.title, i.url, i.selftext
-            if not Utility.matchFound( filter_text_re, i.title ) or not Utility.matchFound( search_text_re, i.title ):
-                Utility.lgr.debug( f'Keyword or filter not found in title...' )
-                continue
+            if not Utility.matchFound( filter_text_re, i.title ) or not Utility.matchFound( search_text_re, i.title ): continue
+                # Utility.lgr.debug( f'Keyword or filter not found in title...' )
             # if Utility.matchFound( filter_text_re, i.title ) and Utility.matchFound( search_text_re, i.title ):
             # check if id exists in db
             if dbm.select_column( table='results', column='id', data=id ):
@@ -63,7 +62,9 @@ class Utility:
                 Utility.lgr.debug( f'\t {url}' )
                 continue
             Utility.lgr.info(f'New id found! :\t:\t: {id}' )
-            Utility.lgr.debug(i.id, ":", i.title, ":", i.url)
+            Utility.lgr.debug(i.id)
+            Utility.lgr.debug(i.title)
+            Utility.lgr.debug(i.url)
             keyword_index = post.find(raw_search_param)
             left_newline = post.rfind( '\n', 0, keyword_index )
             right_newline = post.find( '\n', keyword_index, len(post))
