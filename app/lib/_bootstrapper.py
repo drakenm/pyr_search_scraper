@@ -1,6 +1,7 @@
 import os, yaml
 from os import environ as env
 from urllib.parse import quote_plus
+from datetime import datetime
 class Bootstrapper:
     @classmethod
     def __init__(cls, cli_args) -> None:
@@ -8,9 +9,16 @@ class Bootstrapper:
         env['app_entry'] = os.path.abspath(f'{env["app_root"]}/app/app.py')
         env['app_conf'] = os.path.abspath(f'{env["app_root"]}/conf.yaml')
         env['app_db'] = os.path.abspath(f'{env["app_root"]}/data/app.db')
-        env['app_log'] = os.path.abspath(f'{env["app_root"]}/data/app.log')
+        env['app_logdir'] = os.path.abspath(f'{env["app_root"]}/data/applogs/')
+        env['cron_logdir'] = os.path.abspath(f'{env["app_root"]}/data/cronlogs/')
+        env['app_log'] = os.path.abspath(f'{env["app_root"]}/data/applogs/{datetime.now().strftime("%Y%m%dT%H%M%S")}.log')
         env['app_log_name'] = 'app_logger'
         env['url_base'] = 'https://www.reddit.com'
+
+        if not os.path.exists( env['app_logdir'] ):
+            os.makedirs( env['app_logdir'] )
+        if not os.path.exists( env['cron_logdir'] ):
+            os.makedirs( env['cron_logdir'] )
 
         if os.path.exists( env['app_conf'] ):
             cls.get_conf_vars( env['app_conf'] )
