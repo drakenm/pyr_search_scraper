@@ -57,45 +57,41 @@ class Utility:
             # if Utility.matchFound( filter_text_re, i.title ) and Utility.matchFound( search_text_re, i.title ):
             # check if id exists in db
             if dbm.select_column( table='results', column='id', data=id ):
-                Utility.lgr.debug( f'{id} already exists in db...' )
-                Utility.lgr.debug( f'\t {title}' )
-                Utility.lgr.debug( f'\t {url}' )
+                Utility.lgr.debug( f'\t{title}' )
+                Utility.lgr.debug( f'\t{id} already exists in db...' )
                 continue
-            Utility.lgr.info(f'New id found! :\t:\t: {id}' )
-            Utility.lgr.debug(i.id)
-            Utility.lgr.debug(i.title)
-            Utility.lgr.debug(i.url)
+            Utility.lgr.info(f'\tNew id found:\t{id}' )
+            Utility.lgr.debug( f'\t{title}' )
+            Utility.lgr.debug( f'\t{url}' )
             keyword_index = post.find(raw_search_param)
             left_newline = post.rfind( '\n', 0, keyword_index )
             right_newline = post.find( '\n', keyword_index, len(post))
             price_snippet = post[left_newline+1:right_newline]
-            Utility.lgr.debug( f'keyword index: {keyword_index}' )
-            Utility.lgr.debug( f'left newline: {left_newline}' )
-            Utility.lgr.debug( f'right newline: {right_newline}' )
-            Utility.lgr.debug( f'Price: {price_snippet}' )
+            Utility.lgr.debug( f'\t\tkeyword index: {keyword_index}' )
+            Utility.lgr.debug( f'\t\tleft newline: {left_newline}' )
+            Utility.lgr.debug( f'\t\tright newline: {right_newline}' )
+            Utility.lgr.info( f'\t\tPrice: {price_snippet}' )
             # works well but what is a dollar sign doesn't exist in the derived price snippet?
             if not Utility.matchFound( price_text_re, price_snippet ):
-                Utility.lgr.debug( f'Price snippet does NOT contain a dollar sign...' )
-                Utility.lgr.debug( f'Looking after the string for a dollar sign...' )
+                Utility.lgr.debug( f'\t\t\tPrice snippet does NOT contain a dollar sign...' )
+                Utility.lgr.debug( f'\t\t\tLooking after the string for a dollar sign...' )
                 adjusted_keyword_index = post.find('$', right_newline, len(post))
                 adjusted_left_newline = post.rfind( '\n', 0, adjusted_keyword_index )
                 adjusted_right_newline = post.find( '\n', adjusted_keyword_index, len(post))
                 adjusted_price_snippet = post[left_newline+1:adjusted_right_newline]
-                Utility.lgr.debug( f'adjusted keyword index: {adjusted_keyword_index}' )
-                Utility.lgr.debug( f'adjusted left newline: {adjusted_left_newline}' )
-                Utility.lgr.debug( f'adjusted right newline: {adjusted_right_newline}' )
-                Utility.lgr.debug( f'adjusted price snippet: {adjusted_price_snippet}' )
+                Utility.lgr.debug( f'\t\t\tadjusted keyword index: {adjusted_keyword_index}' )
+                Utility.lgr.debug( f'\t\t\tadjusted left newline: {adjusted_left_newline}' )
+                Utility.lgr.debug( f'\t\t\tadjusted right newline: {adjusted_right_newline}' )
+                Utility.lgr.info( f'\t\t\tadjusted price snippet: {adjusted_price_snippet}' )
             aldi_finds[id] = {'title': title, 'url': url, 'price': price_snippet}
             dbm.add_result( id, title, url, price_snippet )
 
         if env['sms_send'] == 'y':
             for k, v in aldi_finds.items():
-                Utility.lgr.info( f'Found {v["title"]} at {v["url"]} for {v["price"]}' )
-                Utility.lgr.debug("building sms message...")
+                Utility.lgr.debug("\t\t\tBuilding sms message...")
                 message = f"New Ad Posted for a {search_param}:\n\n{v['title']}\n\n{v['url']}\n\nPrice: {v['price']}"
-                Utility.lgr.debug( f"{message}" )
                 if env['sms_key']:
-                    Utility.lgr.debug( f"Sending SMS..." )
+                    Utility.lgr.debug( f"\t\t\tSending SMS..." )
                     Utility.send_sms( env['sms_key'], message )
         else:
-            Utility.lgr.debug( f'SMS not enabled...' )
+            Utility.lgr.debug( f'\t\t\tSMS not enabled...' )
