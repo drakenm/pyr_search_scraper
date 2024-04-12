@@ -21,7 +21,7 @@ class Utility:
 
     @staticmethod
     def send_sms( key:str, message:str ) -> str:
-        url = f"https://sandbox.dialpad.com/api/v2/sms?apikey={key}"
+        url = f"https://dialpad.com/api/v2/sms?apikey={key}"
         payload = {
             'from_number': env['sms_from'],
             'to_numbers': [env['sms_to']],
@@ -58,7 +58,7 @@ class Utility:
             # check if id exists in db
             if dbm.select_column( table='results', column='id', data=id ):
                 Utility.lgr.debug( f'\t{title}' )
-                Utility.lgr.debug( f'\t{id} already exists in db...' )
+                Utility.lgr.debug( f'\t\t{id} already exists in db...' )
                 continue
             Utility.lgr.info(f'\tNew id found:\t{id}' )
             Utility.lgr.debug( f'\t{title}' )
