@@ -37,6 +37,6 @@ rdt = praw.Reddit(
 for p,u in zip(search_params, url_list):
     lgr.debug( f'Search Query:\t{p}' )
     gafs = rdt.subreddit(env['subreddit'])
-    Utility.do_the_thing( gafs, p, env['filter_pattern'], 20 )
+    Utility.do_the_thing( gafs, p, env['filter_pattern'] )
 
 lgr.debug( '======App end logging======' )
